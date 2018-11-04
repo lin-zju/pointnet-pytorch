@@ -1,12 +1,13 @@
 import h5py
 import numpy as np
 from config import cfg
+import os
 
 def get_file_list(filename):
     """
     get a list of file names listed in a file
     """
-    return [line.strip() for line in open(filename, 'r')]
+    return [os.path.join(cfg.ROOT_DIR, line.strip())for line in open(filename, 'r')]
 
 def get_data(filename):
     """
