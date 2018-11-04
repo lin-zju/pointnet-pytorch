@@ -22,7 +22,8 @@ class ModelNet40(Dataset):
         return self.len
     
     def __getitem__(self, index):
-        data = torch.from_numpy(self.data[index])
+        # for Conv1d, (C, N).
+        data = torch.from_numpy(self.data[index]).permute(1, 0)
         label = torch.from_numpy(self.label[index])
         
         return data, label
