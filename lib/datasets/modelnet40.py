@@ -14,7 +14,7 @@ class ModelNet40(Dataset):
             data.append(d)
             label.append(l)
         self.data = np.concatenate(data, axis=0)
-        self.label = np.concatenate(label, axis=0)
+        self.label = np.concatenate(label)
         self.len = self.data.shape[0]
         self.num_points = self.data.shape[1]
         
@@ -24,15 +24,15 @@ class ModelNet40(Dataset):
     def __getitem__(self, index):
         # for Conv1d, (C, N).
         data = torch.from_numpy(self.data[index]).permute(1, 0)
-        label = torch.from_numpy(self.label[index])
+        label = torch.from_numpy(self.label[index]).squeeze().long()
         
         return data, label
     
 """
 test
 """
-
-dataset = ModelNet40(cfg.MODELNET, train=False)
-print(len(dataset))
-data, label = dataset[10]
-print(data.size(), label.size())
+if __name__ == '__main__':
+    dataset = ModelNet40(cfg.MODELNET, train=False)
+    print(len(dataset))
+    data, label = dataset[10]
+    print(data.size(), label.size())
