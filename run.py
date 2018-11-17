@@ -1,5 +1,9 @@
-from lib.utils.train import train_net
+from lib.utils.train import train_net, test_net
+from lib.utils.args import args
 
 
 if __name__ == '__main__':
-    train_net()
+    if args.test:
+        test_net()
+    else:
+        train_net()

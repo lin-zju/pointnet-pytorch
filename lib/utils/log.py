@@ -1,5 +1,5 @@
 from tensorboardX import SummaryWriter
-from lib.utils.config import cfg
+from lib.config.config import cfg
 import os
 
 

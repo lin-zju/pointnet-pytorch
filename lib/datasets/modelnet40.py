@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from torch.utils.data import Dataset
-from lib.utils.config import cfg
+from lib.config.config import cfg
 from lib.utils import provider
 
 

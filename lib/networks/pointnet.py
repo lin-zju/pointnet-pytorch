@@ -1,6 +1,6 @@
 import math
 import torch
-from lib.utils.config import cfg
+from lib.config.config import cfg
 from torch import nn
 import torch.nn.functional as F
 

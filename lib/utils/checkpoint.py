@@ -1,17 +1,26 @@
 import torch
+import sys
 import os
-from lib.utils.config import cfg
+from lib.config.config import cfg
 
 
 def save_best_model(model, acc):
-    if not os.path.exists(cfg.BEST_MODEL_DIR):
-        torch.save(model.state_dict(), cfg.BEST_MODEL_DIR)
-        open(cfg.BEST_ACC_DIR, 'w').write(str(acc))
+    if not os.path.exists(cfg.BEST_MODEL_PATH):
+        torch.save(model.state_dict(), cfg.BEST_MODEL_PATH)
+        open(cfg.BEST_ACC_PATH, 'w').write(str(acc))
     else:
         best_acc = float(open('best_acc.txt', 'r').read())
         if acc > best_acc:
-            torch.save(model.state_dict(), cfg.BEST_MODEL_DIR)
-            open(cfg.BEST_ACC_DIR, 'w').write(str(acc))
+            torch.save(model.state_dict(), cfg.BEST_MODEL_PATH)
+            open(cfg.BEST_ACC_PATH, 'w').write(str(acc))
+
+def load_best_model(model):
+    if not os.path.exists(cfg.BEST_MODEL_PATH):
+        print('best model does not exists.')
+        sys.exit(0)
+    model.load_state_dict(torch.load(cfg.BEST_MODEL_PATH))
+        
+    
 
 
 def save_checkpoint(model, optimizer, scheduler, epoch):
@@ -20,7 +29,7 @@ def save_checkpoint(model, optimizer, scheduler, epoch):
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),
         'epoch': epoch
-    }, cfg.CHECKPOINT_DIR)
+    }, cfg.CHECKPOINT_PATH)
 
 
 def load_checkpoint(model, optimizer, scheduler):
@@ -29,10 +38,11 @@ def load_checkpoint(model, optimizer, scheduler):
     :return:
         the epoch to start from
     """
-    if not os.path.exists(cfg.CHECKPOINT_DIR):
-        print('checkpoint {} does not exists.'.format(cfg.CHECKPOINT_DIR))
-    checkpoint = torch.load(cfg.CHECKPOINT_DIR)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
-    return checkpoint['epoch'] + 1
+    start_epoch = 0
+    if os.path.exists(cfg.CHECKPOINT_PATH):
+        checkpoint = torch.load(cfg.CHECKPOINT_PATH)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        start_epoch = checkpoint['epoch'] + 1
+    return start_epoch

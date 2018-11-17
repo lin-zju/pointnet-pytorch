@@ -1,5 +1,5 @@
 from lib.datasets.modelnet40 import ModelNet40;
-from lib.utils.config import cfg
+from lib.config.config import cfg
 
 dataset = ModelNet40(cfg.MODELNET)
 data, label = dataset[1]

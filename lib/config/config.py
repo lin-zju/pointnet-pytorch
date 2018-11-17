@@ -1,16 +1,32 @@
 from easydict import EasyDict
+from lib.utils.args import args
 import os
 import sys
 import torch
+import json
+
 
 cfg = EasyDict()
+with open(args.conf, 'r') as f:
+    conf = json.load(f)
+
+conf_list = ['run_name', 'resume', 'learning_rate', 'clear_history',
+             'weight_decay', 'num_epochs', 'batch_size', 'patience', 'print_every']
+for name in conf_list:
+    if name not in conf:
+        print('configuration file: "{}" missing.'.format(name))
+        
+"""
+RUN NAME
+"""
+cfg.RUN_NAME = conf['run_name']
 
 """
 Path setting
 """
 
-cfg.UTILS_DIR = os.path.dirname(os.path.realpath(__file__))
-cfg.LIB_DIR = os.path.dirname(cfg.UTILS_DIR)
+cfg.CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
+cfg.LIB_DIR = os.path.dirname(cfg.CONFIG_DIR)
 cfg.ROOT_DIR = os.path.dirname(cfg.LIB_DIR)
 cfg.DATA_DIR = os.path.join(cfg.ROOT_DIR, 'data')
 
@@ -84,17 +100,22 @@ for item in NAME_TO_ID.items():
 Logging settings
 """
 
-cfg.LOG_DIR = os.path.join(cfg.ROOT_DIR, 'runs/log')
-cfg.PRINT_EVERY = 20
+cfg.LOG_DIR = os.path.join(cfg.ROOT_DIR, 'runs', cfg.RUN_NAME)
+cfg.CLEAR_HISTORY = conf['clear_history']
+
+cfg.PRINT_EVERY = conf['print_every']
 
 """
 Training settings
 """
-cfg.NUM_EPOCHS = 100
-cfg.BATCH_SIZE = 32
+cfg.NUM_EPOCHS = conf['num_epochs']
+cfg.BATCH_SIZE = conf['batch_size']
 cfg.DEVICE = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
-cfg.PATIENCE = 5
-cfg.RESUME = True
+cfg.PATIENCE = conf['patience']
+cfg.RESUME = conf['resume']
+cfg.NUM_WORKERS = conf['num_workers']
+cfg.LEARNING_RATE = conf['learning_rate']
+cfg.WEIGHT_DECAY = conf['weight_decay']
 
 """
 Model saving
@@ -102,4 +123,15 @@ Model saving
 cfg.CHECKPOINT_DIR = os.path.join(cfg.ROOT_DIR, 'checkpoint')
 cfg.BEST_MODEL_PATH = os.path.join(cfg.CHECKPOINT_DIR, 'best_model.pth')
 cfg.BEST_ACC_PATH = os.path.join(cfg.CHECKPOINT_DIR, 'best_acc.txt')
-cfg.CHECKPOINT_PATH = os.path.join(cfg.CHECKPOINT_DIR, 'exp-1.tar')
+cfg.CHECKPOINT_PATH = os.path.join(cfg.CHECKPOINT_DIR, cfg.RUN_NAME + '.tar')
+
+"""
+Clear history
+"""
+
+if cfg.CLEAR_HISTORY:
+    if os.path.exists(cfg.LOG_DIR):
+        for f in os.listdir(cfg.LOG_DIR):
+            os.remove(os.path.join(cfg.LOG_DIR, f))
+    if os.path.exists(cfg.CHECKPOINT_PATH):
+        os.remove(cfg.CHECKPOINT_PATH)

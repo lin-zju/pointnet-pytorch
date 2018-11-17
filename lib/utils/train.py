@@ -1,13 +1,13 @@
 import torch
-from lib.utils.config import cfg
-from lib.utils.config import ID_TO_NAME
+from lib.config.config import cfg
+from lib.config.config import ID_TO_NAME
 from lib.networks.pointnet import PointNet
 from torch import optim
 from lib.utils.loss import PointNetLoss
 from torch.utils.data import DataLoader
 from lib.datasets.modelnet40 import ModelNet40
 from lib.utils.log import Recorder
-from lib.utils.checkpoint import save_best_model
+from lib.utils.checkpoint import save_best_model, load_best_model
 from lib.utils.checkpoint import save_checkpoint, load_checkpoint
 
 
@@ -76,12 +76,12 @@ def test(net, dataloader, device):
 def train_net():
     device = cfg.DEVICE
     net = PointNet(40).to(device)
-    optimizer = optim.Adam(net.parameters(), weight_decay=0.001)
+    optimizer = optim.Adam(net.parameters(), lr=cfg.LEARNING_RATE, weight_decay=cfg.WEIGHT_DECAY)
     criterion = PointNetLoss(0.001)
     dataset = ModelNet40(cfg.MODELNET)
     val_dataset = ModelNet40(cfg.MODELNET, train=False)
-    dataloader = DataLoader(dataset, batch_size=cfg.BATCH_SIZE, shuffle=True, num_workers=4)
-    val_dataloader = DataLoader(val_dataset, batch_size=cfg.BATCH_SIZE, shuffle=True, num_workers=4)
+    dataloader = DataLoader(dataset, batch_size=cfg.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
+    val_dataloader = DataLoader(val_dataset, batch_size=cfg.BATCH_SIZE, shuffle=True, num_workers=cfg.NUM_WORKERS)
     recorder = Recorder(cfg.PRINT_EVERY)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=cfg.PATIENCE)
     
@@ -104,7 +104,8 @@ def test_net():
     device = cfg.DEVICE
     dataset = ModelNet40(cfg.MODELNET, train=False)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=4)
-    net = PointNet(40)
+    net = PointNet(40).to(device)
+    load_best_model(net)
     test(net, dataloader, device)
 
 

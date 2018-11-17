@@ -2,7 +2,6 @@
 
 * Add visualization
 * Add training set evaluation accuracy
-* Add command line utility
 
 ## Training process
 

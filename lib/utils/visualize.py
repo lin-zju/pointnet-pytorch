@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from lib.datasets.modelnet40 import ModelNet40
-from lib.utils.config import cfg
+from lib.config.config import cfg
 
 
 def get2Dpoints(point_cloud, K, R, T):

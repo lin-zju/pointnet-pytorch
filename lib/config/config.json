@@ -1,0 +1,13 @@
+{
+  "run_name": "run-1",
+  "resume": true,
+  "clear_history": false,
+
+  "learning_rate": 0.001,
+  "weight_decay": 0.001,
+  "num_epochs": 100,
+  "batch_size": 32,
+  "patience":  5,
+  "print_every": 20,
+  "num_workers": 4
+}
