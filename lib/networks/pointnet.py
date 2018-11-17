@@ -1,4 +1,6 @@
+import math
 import torch
+from lib.utils.config import cfg
 from torch import nn
 import torch.nn.functional as F
 
@@ -48,12 +50,24 @@ class PointNet(nn.Module):
         self.bn4 = nn.BatchNorm1d(128)
         self.fc5 = nn.Conv1d(128, 1024, 1, bias=False)
         self.bn5 = nn.BatchNorm1d(1024)
-        self.fc6 = nn.Linear(1024, 512)
+        self.fc6 = nn.Linear(1024, 512, bias=False)
         self.bn6 = nn.BatchNorm1d(512)
-        self.fc7 = nn.Linear(512, 256)
+        self.fc7 = nn.Linear(512, 256, bias=False)
         self.bn7 = nn.BatchNorm1d(256)
         self.dropout = nn.Dropout(0.3)
         self.fc8 = nn.Linear(256, cls_num)
+        
+        # xavier initialization
+        for m in self.modules():
+            if isinstance(m, nn.BatchNorm1d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Conv1d):
+                n = m.kernel_size[0] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2.0 / n))
+            elif isinstance(m, nn.Linear):
+                n = m.in_features
+                m.weight.data.normal_(0, math.sqrt(2.0 / n))
     
     def forward(self, x):
         input_transform = self.trans_input(x)
@@ -73,12 +87,17 @@ class PointNet(nn.Module):
         
         return x, feature_transform
 
+
 """
 Test
 """
 
 if __name__ == '__main__':
-    input = torch.randn(10, 3, 1024)
+    import time
+    
     net = PointNet(40)
-    output, trans = net(input)
-    print(output.size(), trans.size())
+    print('see')
+    time.sleep(10)
+    net = net.to(cfg.DEVICE)
+    print('see')
+    time.sleep(20)

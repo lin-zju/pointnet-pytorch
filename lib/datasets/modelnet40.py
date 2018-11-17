@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 from lib.utils.config import cfg
 from lib.utils import provider
 
+
 class ModelNet40(Dataset):
     def __init__(self, root, train=True):
         filelist = provider.get_file_list(cfg.TRAIN_LIST if train else cfg.TEST_LIST)
@@ -17,22 +18,27 @@ class ModelNet40(Dataset):
         self.label = np.concatenate(label)
         self.len = self.data.shape[0]
         self.num_points = self.data.shape[1]
-        
+    
     def __len__(self):
         return self.len
     
     def __getitem__(self, index):
+        """
+        
+        :param index: index
+        :return:
+            data: Tensor, (3, N)
+            label: LongTensor, (N,), in range [0, 15]
+        """
         # for Conv1d, (C, N).
         data = torch.from_numpy(self.data[index]).permute(1, 0)
         label = torch.from_numpy(self.label[index]).squeeze().long()
         
         return data, label
-    
+
+
 """
 test
 """
 if __name__ == '__main__':
-    dataset = ModelNet40(cfg.MODELNET, train=False)
-    print(len(dataset))
-    data, label = dataset[10]
-    print(data.size(), label.size())
+    pass
