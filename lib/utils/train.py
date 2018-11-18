@@ -75,7 +75,7 @@ def test(net, dataloader, device):
 
 def train_net():
     device = cfg.DEVICE
-    net = PointNet(40).to(device)
+    net = PointNet(cfg.NUM_CLASS).to(device)
     optimizer = optim.Adam(net.parameters(), lr=cfg.LEARNING_RATE, weight_decay=cfg.WEIGHT_DECAY)
     criterion = PointNetLoss(0.001)
     dataset = ModelNet40(cfg.MODELNET)
@@ -104,7 +104,7 @@ def test_net():
     device = cfg.DEVICE
     dataset = ModelNet40(cfg.MODELNET, train=False)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=4)
-    net = PointNet(40).to(device)
+    net = PointNet(cfg.NUM_CLASS).to(device)
     load_best_model(net)
     test(net, dataloader, device)
 

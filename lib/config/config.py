@@ -7,19 +7,7 @@ import json
 
 
 cfg = EasyDict()
-with open(args.conf, 'r') as f:
-    conf = json.load(f)
 
-conf_list = ['run_name', 'resume', 'learning_rate', 'clear_history',
-             'weight_decay', 'num_epochs', 'batch_size', 'patience', 'print_every']
-for name in conf_list:
-    if name not in conf:
-        print('configuration file: "{}" missing.'.format(name))
-        
-"""
-RUN NAME
-"""
-cfg.RUN_NAME = conf['run_name']
 
 """
 Path setting
@@ -30,14 +18,30 @@ cfg.LIB_DIR = os.path.dirname(cfg.CONFIG_DIR)
 cfg.ROOT_DIR = os.path.dirname(cfg.LIB_DIR)
 cfg.DATA_DIR = os.path.join(cfg.ROOT_DIR, 'data')
 
-
 def add_path():
     for key in cfg:
         if 'DIR' in key:
             sys.path.append(cfg[key])
 
-
 add_path()
+
+"""
+arg configurations
+"""
+conf_path = os.path.join(cfg.ROOT_DIR, args.conf)
+with open(conf_path, 'r') as f:
+    conf = json.load(f)
+
+conf_list = ['run_name', 'resume', 'learning_rate', 'clear_history',
+             'weight_decay', 'num_epochs', 'batch_size', 'patience', 'print_every']
+for name in conf_list:
+    if name not in conf:
+        print('configuration file: "{}" missing.'.format(name))
+"""
+RUN NAME
+"""
+cfg.RUN_NAME = conf['run_name']
+
 
 """
 Dataset settings
@@ -46,7 +50,7 @@ Dataset settings
 cfg.MODELNET = os.path.join(cfg.DATA_DIR, 'modelnet40_ply_hdf5_2048')
 cfg.TRAIN_LIST = os.path.join(cfg.MODELNET, 'train_files.txt')
 cfg.TEST_LIST = os.path.join(cfg.MODELNET, 'test_files.txt')
-cfg.NUM_CLASS = 40
+cfg.NUM_CLASS = 41
 
 NAME_TO_ID = {
     'airplane': 0,
@@ -89,6 +93,7 @@ NAME_TO_ID = {
     'vase': 37,
     'wardrobe': 38,
     'xbox': 39,
+    'gun': 40
 }
 
 ID_TO_NAME = {}

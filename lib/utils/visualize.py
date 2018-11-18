@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import math
 from lib.datasets.modelnet40 import ModelNet40
 from lib.config.config import cfg
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def get2Dpoints(point_cloud, K, R, T):
@@ -36,9 +37,14 @@ def rotation_matrix(axis, theta):
                      [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
 
 
-def visualize(cloud, K, R, T):
-    pts = get2Dpoints(cloud, K, R, T)
-    plt.scatter(pts[0], pts[1], s=1)
+def visualize(cloud, K, R, T, ax):
+    # pts = get2Dpoints(cloud, K, R, T)
+    # plt.scatter(pts[0], pts[1], s=1)
+    ax.set_xlim(-1, 1)
+    ax.set_ylim(-1, 1)
+    ax.set_zlim(-1, 1)
+    ax.scatter(cloud[0], cloud[1], cloud[2], s=1)
+    
 
 
 def visualize_id(dataset, id, K, R, T):
@@ -49,8 +55,8 @@ def visualize_id(dataset, id, K, R, T):
         cloud, label = data[0].numpy(), data[1].numpy()
         if label == id:
             count += 1
-            plt.subplot(2, 2, count)
-            visualize(cloud, K, R, T)
+            ax = plt.subplot(2, 2, count, projection='3d')
+            visualize(cloud, K, R, T, ax)
             if count == 4:
                 break
     plt.show()

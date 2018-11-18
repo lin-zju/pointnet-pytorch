@@ -31,7 +31,7 @@ class ModelNet40(Dataset):
             label: LongTensor, (N,), in range [0, 15]
         """
         # for Conv1d, (C, N).
-        data = torch.from_numpy(self.data[index]).permute(1, 0)
+        data = torch.from_numpy(self.data[index]).permute(1, 0).float()
         label = torch.from_numpy(self.label[index]).squeeze().long()
         
         return data, label
@@ -41,4 +41,8 @@ class ModelNet40(Dataset):
 test
 """
 if __name__ == '__main__':
-    pass
+    dataset = ModelNet40(cfg.MODELNET)
+    print(len(dataset))
+    data, label = dataset[10000]
+    print(data.dtype, label.dtype)
+    print(data.size(), label.size())
