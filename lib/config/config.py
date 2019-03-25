@@ -92,8 +92,8 @@ NAME_TO_ID = {
     'tv_stand': 36,
     'vase': 37,
     'wardrobe': 38,
-    'xbox': 39,
-    'gun': 40
+    'xbox': 39
+    # 'gun': 40
 }
 
 ID_TO_NAME = {}
